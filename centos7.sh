@@ -1,7 +1,17 @@
 #!/usr/bin/env bash
 PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export PATH
+cat << "EOF"
 
+                           _
+ ___  ___  _ __   __ _ ___| |__  _   _  __      _____
+/ __|/ _ \| '_ \ / _` / __| '_ \| | | | \ \ /\ / / _ \
+\__ \ (_) | | | | (_| \__ \ | | | |_| |  \ V  V / (_) |
+|___/\___/|_| |_|\__, |___/_| |_|\__,_|   \_/\_/ \___/
+                 |___/
+
+Author: songshu wo
+EOF
 echo "Shadowsocksr server installation script for CentOS 7 x64"
 [ $(id -u) != "0" ] && { echo "Error: You must be root to run this script!"; exit 1; }
 ARG_NUM=$#
@@ -67,7 +77,6 @@ if [ -d "/root/shadowsocks" ]; then
 		if [[ ${is_clean_old} != "y" && ${is_clean_old} != "Y" && ${is_clean_old} != "N" && ${is_clean_old} != "n" ]]; then
 			echo -n "Bad answer! Please only input number Y or N"
 		elif [[ ${is_clean_old} == "y" || ${is_clean_old} == "Y" ]]; then
-			rm -rf /soft
 			break
 		else
 			exit 0
@@ -112,7 +121,7 @@ if [[ ${is_auto} != "y" ]]; then
 			echo "Bad answer! Please only input number 1~2"
 		else
 			break
-		fi			
+		fi
 	done
 	while :; do echo
 		echo -n "Do you want to enable multi user in single port feature?(Y/N)"
@@ -176,4 +185,59 @@ if [[ ${is_auto} != "y" ]]; then
 	elif [ "${connection_method}" == '2' ]; then
 		do_glzjinmod
 	fi
+fi
+do_bbr(){
+ echo "Running system optimization and enable BBR..."
+  rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
+  rpm -Uvh https://www.elrepo.org/elrepo-release-7.0-4.el7.elrepo.noarch.rpm
+	yum remove kernel-headers -y
+	yum --enablerepo=elrepo-kernel install kernel-ml kernel-ml-headers -y
+	grub2-set-default 0
+	echo "tcp_bbr" >> /etc/modules-load.d/modules.conf
+	cat >> /etc/security/limits.conf << EOF
+	* soft nofile 51200
+	* hard nofile 51200
+EOF
+	ulimit -n 51200
+	cat >> /etc/sysctl.conf << EOF
+	fs.file-max = 51200
+	net.core.default_qdisc = fq
+	net.core.rmem_max = 67108864
+	net.core.wmem_max = 67108864
+	net.core.netdev_max_backlog = 250000
+	net.core.somaxconn = 4096
+	net.ipv4.tcp_congestion_control = bbr
+	net.ipv4.tcp_syncookies = 1
+	net.ipv4.tcp_tw_reuse = 1
+	net.ipv4.tcp_fin_timeout = 30
+	net.ipv4.tcp_keepalive_time = 1200
+	net.ipv4.ip_local_port_range = 10000 65000
+	net.ipv4.tcp_max_syn_backlog = 8192
+	net.ipv4.tcp_max_tw_buckets = 5000
+	net.ipv4.tcp_fastopen = 3
+	net.ipv4.tcp_rmem = 4096 87380 67108864
+	net.ipv4.tcp_wmem = 4096 65536 67108864
+	net.ipv4.tcp_mtu_probing = 1
+EOF
+	sysctl -p
+}
+while :; do echo
+	echo -n "Do you want to enable BBR feature(from mainline kernel) and optimizate the system?(Y/N)"
+	read is_bbr
+	if [[ ${is_bbr} != "y" && ${is_bbr} != "Y" && ${is_bbr} != "N" && ${is_bbr} != "n" ]]; then
+		echo -n "Bad answer! Please only input number Y or N"
+	else
+		break
+	fi
+done
+if [[ ${is_bbr} == "y" || ${is_bbr} == "Y" ]]; then
+  do_bbr
+fi
+echo "System require a reboot to complete the installation process, press Y to continue, or press any key else to exit this script."
+read is_reboot
+if [[ ${is_reboot} == "y" || ${is_reboot} == "Y" ]]; then
+  reboot
+else
+  echo -e "Reboot has been canceled..."
+	exit 0
 fi
