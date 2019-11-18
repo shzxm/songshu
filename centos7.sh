@@ -10,6 +10,7 @@ cat << "EOF"
 |___/\___/|_| |_|\__, |___/_| |_|\__,_|   \_/\_/ \___/
                  |___/
 
+
 Author: songshu wo
 EOF
 echo "Shadowsocksr server installation script for CentOS 7 x64"
@@ -137,11 +138,9 @@ do_mu(){
 	if [[ ${is_auto} != "y" ]]; then
 		echo -n "Please enter MU_SUFFIX:"
 		read mu_suffix
-		echo -n "Please enter MU_REGEX:"
-		read mu_regex
 		echo "Writting MU config..."
 	fi
-	sed -i -e "s/MU_SUFFIX = 'zhaoj.in'/MU_SUFFIX = '${mu_suffix}'/g" -e "s/MU_REGEX = '%5m%id.%suffix'/MU_REGEX = '${mu_regex}'/g" userapiconfig.py
+	sed -i -e "s/MU_SUFFIX = 'zhaoj.in'/MU_SUFFIX = '${mu_suffix}'/g" userapiconfig.py
 }
 do_modwebapi(){
 	if [[ ${is_auto} != "y" ]]; then
