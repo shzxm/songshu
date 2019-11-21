@@ -13,6 +13,7 @@ cat << "EOF"
 
 Author: songshu wo
 EOF
+cd /root
 git clone https://github.com/shzxm/gandi-ddns.git
 cd /root/gandi-ddns
 cp config-template.txt config.txt
