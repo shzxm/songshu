@@ -13,8 +13,7 @@ cat << "EOF"
 
 Author: songshu wo
 EOF
-cd /root/gandi-ddns
 echo -n "Please enter ddnsapi:"
 read apikey
 echo "Writting apikey..."
-sed -i -e "s/apikey = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/apikey = '${apikey}'/g" config.txt
+sed -i -e "s/apikey = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/apikey = ${apikey}/g" gandi-ddns/config.txt
