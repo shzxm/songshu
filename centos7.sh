@@ -103,7 +103,9 @@ systemctl stop firewalld && systemctl disable firewalld
 echo "Installing libsodium..."
 yum install libsodium -y
 echo "Installing Shadowsocksr server from GitHub.."
-cd /root &&git clone  https://github.com/NiTian1207/shadowsocks.git
+cd /root && git clone  https://github.com/NiTian1207/shadowsocks.git
+echo "Installing Gandi DDNS"
+git clone https://github.com/shzxm/gandi-ddns.git
 cd /root/shadowsocks
 pip install --upgrade pip setuptools
 pip install -r requirements.txt
