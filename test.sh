@@ -15,6 +15,7 @@ Author: songshu wo
 EOF
 cd /root
 git clone https://github.com/shzxm/gandi-ddns.git
+pip install -r requirements.txt
 cd /root/gandi-ddns
 cp config-template.txt config.txt
 echo -n "Please enter apikey:"
@@ -31,10 +32,8 @@ echo "Writting a_name..."
 sed -i -e "s/a_name = raspbian/a_name = ${a_name}/g" config.txt
 cat /root/gandi-ddns/config.txt
 echo "Writting system config..."
-wget -O ssr.service https://raw.githubusercontent.com/shzxm/songshu/master/ddns.service.el7
-wget -O ddns.service https://raw.githubusercontent.com/shzxm/songshu/master/ddns.service.e17
+wget -O ssr.service https://raw.githubusercontent.com/shzxm/songshu/master/ssr.service.el7
 chmod 754 ssr.service && mv ssr.service /usr/lib/systemd/system
-chmod 754 ddns.service && mv ddns.service /usr/lib/systemd/system
+echo "@reboot python /root/gandi-ddns/gandi_ddns.py &" >> /var/spool/cron/root
 echo "Starting SSR Node Service..."
-systemctl enable ddns && systemctl start ddns
 systemctl enable ssr && systemctl start ssr

@@ -106,6 +106,7 @@ echo "Installing Shadowsocksr server from GitHub.."
 cd /root && git clone  https://github.com/shzxm/shadowsocks.git
 echo "Installing Gandi DDNS"
 git clone https://github.com/shzxm/gandi-ddns.git
+pip install -r requirements.txt
 cd /root/shadowsocks
 pip install --upgrade pip setuptools
 pip install -r requirements.txt
@@ -240,13 +241,11 @@ EOF
 	sysctl -p
 }
 do_service(){
-	echo "Writting system config..."
-	wget -O ssr.service https://raw.githubusercontent.com/shzxm/songshu/master/ssr.service.e17
-  wget -O ddns.service https://raw.githubusercontent.com/shzxm/songshu/master/ddns.service.e17
-	chmod 754 ssr.service && mv ssr.service /usr/lib/systemd/system
-  chmod 754 ddns.service && mv ddns.service /usr/lib/systemd/system
-	echo "Starting SSR Node Service..."
-	systemctl enable ddns && systemctl start ddns
+  echo "Writting system config..."
+  wget -O ssr.service https://raw.githubusercontent.com/shzxm/songshu/master/ssr.service.el7
+  chmod 754 ssr.service && mv ssr.service /usr/lib/systemd/system
+  echo "@reboot python /root/gandi-ddns/gandi_ddns.py &" >> /var/spool/cron/root
+  echo "Starting SSR Node Service..."
   systemctl enable ssr && systemctl start ssr
 }
 while :; do echo
