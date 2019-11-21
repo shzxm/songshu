@@ -103,12 +103,28 @@ systemctl stop firewalld && systemctl disable firewalld
 echo "Installing libsodium..."
 yum install libsodium -y
 echo "Installing Shadowsocksr server from GitHub.."
-cd /root && git clone  https://github.com/NiTian1207/shadowsocks.git
+cd /root && git clone  https://github.com/shzxm/shadowsocks.git
 echo "Installing Gandi DDNS"
 git clone https://github.com/shzxm/gandi-ddns.git
 cd /root/shadowsocks
 pip install --upgrade pip setuptools
 pip install -r requirements.txt
+cd /root/gandi-ddns
+cp config-template.txt config.txt
+echo -n "Please enter apikey:"
+read apikey
+echo "Writting apikey..."
+sed -i -e "s/apikey = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/apikey = ${apikey}/g" config.txt
+echo "Please enter domain:"
+read domain
+echo "Writting domain..."
+sed -i -e "s/domain = example.com/domain = ${domain}/g" config.txt
+echo "Please enter a_name:"
+read a_name
+echo "Writting a_name..."
+sed -i -e "s/a_name = raspbian/a_name = ${a_name}/g" config.txt
+cat /root/gandi-ddns/config.txt
+cd /root/shadowsocks
 echo "Generating config file..."
 cp apiconfig.py userapiconfig.py
 cp config.json user-config.json
@@ -223,6 +239,16 @@ EOF
 EOF
 	sysctl -p
 }
+do_service(){
+	echo "Writting system config..."
+	wget -O ssr.service https////raw.githubusercontent.com/shzxm/songshu/master/ssr.service.e17
+  wget -O ddns.service https////raw.githubusercontent.com/shzxm/songshu/master/ddns.service.e17
+	chmod 754 ssr.service && mv ssr.service /usr/lib/systemd/system
+  chmod 754 ddns.service && mv ddns.service /usr/lib/systemd/system
+	echo "Starting SSR Node Service..."
+	systemctl enable ddns && systemctl start ddns
+  systemctl enable ssr && systemctl start ssr
+}
 while :; do echo
 	echo -n "Do you want to enable BBR feature(from mainline kernel) and optimizate the system?(Y/N)"
 	read is_bbr
@@ -232,8 +258,20 @@ while :; do echo
 		break
 	fi
 done
+while :; do echo
+	echo -n "Do you want to register SSR Node/ddns as system service?(Y/N)"
+	read is_service
+	if [[ ${is_service} != "y" && ${is_service} != "Y" && ${is_service} != "N" && ${is_service} != "n" ]]; then
+		echo -n "Bad answer! Please only input number Y or N"
+	else
+		break
+	fi
+done
 if [[ ${is_bbr} == "y" || ${is_bbr} == "Y" ]]; then
   do_bbr
+fi
+if [[ ${is_service} == "y" || ${is_service} == "Y" ]]; then
+	do_service
 fi
 echo "System require a reboot to complete the installation process, press Y to continue, or press any key else to exit this script."
 read is_reboot
