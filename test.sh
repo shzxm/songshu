@@ -15,9 +15,7 @@ Author: songshu wo
 EOF
 
 cd /root/gandi-ddns
-do_ddnsapi(){
-		echo -n "Please enter ddnsapi:"
-		read apikey
-		echo "Writting apikey..."
-	sed -i -e "s/apikey = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/apikey = '${apikey}'/g" config.txt
-}
+echo -n "Please enter ddnsapi:"
+read apikey
+echo "Writting apikey..."
+sed -i -e "s/apikey = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/apikey = '${apikey}'/g" config.txt
