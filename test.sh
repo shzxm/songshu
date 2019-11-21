@@ -13,20 +13,11 @@ cat << "EOF"
 
 Author: songshu wo
 EOF
-if [[ ${is_auto} != "y" ]]; then
-	echo "Press Y for continue the installation process, or press any key else to exit."
-	read is_install
-	if [[ ${is_install} != "y" && ${is_install} != "Y" ]]; then
-    	echo -e "Installation has been canceled..."
-    	exit 0
-	fi
-fi
+
 cd /root/gandi-ddns
 do_ddnsapi(){
-  if [[ ${is_auto} != "y" ]];then
 		echo -n "Please enter ddnsapi:"
 		read apikey
 		echo "Writting apikey..."
-  fi  
 	sed -i -e "s/apikey = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/apikey = '${apikey}'/g" config.txt
 }
