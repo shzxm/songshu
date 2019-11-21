@@ -27,5 +27,6 @@ do_ddnsapi(){
 		echo -n "Please enter ddnsapi:"
 		read apikey
 		echo "Writting apikey..."
+  fi  
 	sed -i -e "s/apikey = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/apikey = '${apikey}'/g" config.txt
 }
