@@ -241,8 +241,8 @@ EOF
 }
 do_service(){
 	echo "Writting system config..."
-	wget -O ssr.service https////raw.githubusercontent.com/shzxm/songshu/master/ssr.service.e17
-  wget -O ddns.service https////raw.githubusercontent.com/shzxm/songshu/master/ddns.service.e17
+	wget -O ssr.service https//raw.githubusercontent.com/shzxm/songshu/master/ssr.service.e17
+  wget -O ddns.service https//raw.githubusercontent.com/shzxm/songshu/master/ddns.service.e17
 	chmod 754 ssr.service && mv ssr.service /usr/lib/systemd/system
   chmod 754 ddns.service && mv ddns.service /usr/lib/systemd/system
 	echo "Starting SSR Node Service..."
