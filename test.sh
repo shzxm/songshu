@@ -13,7 +13,18 @@ cat << "EOF"
 
 Author: songshu wo
 EOF
+cd /root/gandi-ddns
+cp config-template.txt config.txt
 echo -n "Please enter ddnsapi:"
 read apikey
 echo "Writting apikey..."
-sed -i -e "s/apikey = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/apikey = ${apikey}/g" gandi-ddns/config.txt
+sed -i -e "s/apikey = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/apikey = ${apikey}/g" config.txt
+echo "Please enter domain..."
+read domain
+echo "Writting domain"
+sed -i -e "s/domain = example.com/apikey = ${domain}/g" config.txt
+echo "Please enter a_name"
+read a_name
+echo "Writting a_name..."
+sed -i -e "s/a_name = raspbian /apikey = ${a_name}/g" config.txt
+cat /root/gandi-ddns/config.txt
