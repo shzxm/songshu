@@ -23,8 +23,9 @@ if [[ ${is_auto} != "y" ]]; then
 fi
 cd /root/gandi-ddns
 do_ddnsapi(){
+  if [[ ${is_auto} != "y" ]];then
 		echo -n "Please enter ddnsapi:"
-		read ddnsapi
-		echo "Writting MU config..."
-	sed -i -e "s/apikey = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/apikey = '${ddnsapi}'/g" config.txt
+		read apikey
+		echo "Writting apikey..."
+	sed -i -e "s/apikey = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/apikey = '${apikey}'/g" config.txt
 }
