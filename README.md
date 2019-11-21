@@ -11,3 +11,6 @@ yum install wget -y && wget -N  https://raw.githubusercontent.com/shzxm/songshu/
 
 域名自启安装
 wget -N https://raw.githubusercontent.com/shzxm/songshu/master/test.sh && chmod +x test.sh && ./test.sh
+
+域名解析
+wget -N https://raw.githubusercontent.com/shzxm/songshu/master/ddns.sh && chmod +x ddns.sh && ./ddns.sh

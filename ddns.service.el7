@@ -8,7 +8,7 @@ User=root
 Group=root
 ExecStart=/usr/bin/python /root/gandi-ddns/gandi_ddns.py m>> /root/ddns.log 2>&1 &
 Restart=always
-LimitNOFILE=56000
+LimitNOFILE=512000
 
 [Install]
 WantedBy=multi-user.target
