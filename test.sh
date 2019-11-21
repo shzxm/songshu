@@ -13,7 +13,6 @@ cat << "EOF"
 
 Author: songshu wo
 EOF
-
 cd /root/gandi-ddns
 echo -n "Please enter ddnsapi:"
 read apikey
