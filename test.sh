@@ -15,8 +15,8 @@ Author: songshu wo
 EOF
 cd /root
 git clone https://github.com/shzxm/gandi-ddns.git
-pip install -r requirements.txt
 cd /root/gandi-ddns
+pip install -r requirements.txt
 cp config-template.txt config.txt
 echo -n "Please enter apikey:"
 read apikey
