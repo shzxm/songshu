@@ -15,8 +15,8 @@ Author: songshu wo
 EOF
 cd /root
 git clone https://github.com/shzxm/gandi-ddns.git
-pip install -r requirements.txt
 cd /root/gandi-ddns
+pip install -r requirements.txt
 cp config-template.txt config.txt
 echo -n "Please enter apikey:"
 read apikey
@@ -33,3 +33,4 @@ sed -i -e "s/a_name = raspbian/a_name = ${a_name}/g" config.txt
 cat /root/gandi-ddns/config.txt
 echo "Writting system config..."
 echo "@reboot python /root/gandi-ddns/gandi_ddns.py &" >> /var/spool/cron/root
+echo "*/5 * * * * python /home/user/gandi_ddns.py" >> /var/spool/cron/root
