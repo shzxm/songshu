@@ -34,3 +34,4 @@ cat /root/gandi-ddns/config.txt
 echo "Writting system config..."
 echo "@reboot python /root/gandi-ddns/gandi_ddns.py &" >> /var/spool/cron/root
 echo "*/5 * * * * python /home/user/gandi_ddns.py" >> /var/spool/cron/root
+python /gandi-ddns/gandi_ddns.py
