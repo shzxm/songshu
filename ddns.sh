@@ -35,4 +35,5 @@ echo "Writting system config..."
 echo "@reboot python /root/gandi-ddns/gandi_ddns.py &" >> /var/spool/cron/root
 echo "*/5 * * * * python /home/user/gandi_ddns.py" >> /var/spool/cron/root
 chmod +x gandi_ddns.py
+service crond restart
 python gandi-ddns/gandi_ddns.py
