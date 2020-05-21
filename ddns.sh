@@ -14,6 +14,9 @@ cat << "EOF"
 Author: songshu wo
 EOF
 cd /root
+yum -y install python-setuptools
+easy_install pip
+yum -y install nano git 
 git clone https://github.com/shzxm/gandi-ddns.git
 cd /root/gandi-ddns
 pip install -r requirements.txt
@@ -33,7 +36,7 @@ sed -i -e "s/a_name = raspbian/a_name = ${a_name}/g" config.txt
 cat /root/gandi-ddns/config.txt
 echo "Writting system config..."
 echo "@reboot python /root/gandi-ddns/gandi_ddns.py &" >> /var/spool/cron/root
-echo "*/5 * * * * python /home/user/gandi_ddns.py" >> /var/spool/cron/root
-chmod +x gandi_ddns.py
+echo "*/5 * * * * python /root/gandi-ddns/gandi_ddns.py" >> /var/spool/cron/root
+chmod +x /root/gandi-ddns/gandi_ddns.py
 service crond restart
 python gandi-ddns/gandi_ddns.py
