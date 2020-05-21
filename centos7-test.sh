@@ -24,7 +24,7 @@ while :; do
   case "$1" in
 	--is_auto)
       is_auto=y; shift 1
-      [ -d "/root/shadowsocks" ] && { echo "Shadowsocksr server software is already exist"; exit 1; }
+      [ -d "/soft/shadowsocks" ] && { echo "Shadowsocksr server software is already exist"; exit 1; }
       ;;
     --connection_method)
       connection_method=$2; shift 2
@@ -71,61 +71,40 @@ if [[ ${is_auto} != "y" ]]; then
 	fi
 fi
 echo "Checking if there any exist Shadowsocksr server software..."
-if [ -d "/root/shadowsocks" ]; then
+if [ -d "/soft/shadowsocks" ]; then
 	while :; do echo
 		echo -n "Detect exist shadowsocks server installation! If you continue this install, all the previous configuration will be lost! Continue?(Y/N)"
 		read is_clean_old
 		if [[ ${is_clean_old} != "y" && ${is_clean_old} != "Y" && ${is_clean_old} != "N" && ${is_clean_old} != "n" ]]; then
 			echo -n "Bad answer! Please only input number Y or N"
 		elif [[ ${is_clean_old} == "y" || ${is_clean_old} == "Y" ]]; then
+			rm -rf /soft
 			break
 		else
 			exit 0
 		fi
 	done
 fi
-echo "Asia/Shanghai"
-yum install -y ntpdate ntp
-            ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
-            ln -sf /usr/share/zoneinfo/CST /etc/localtime
-            /usr/sbin/ntpdate pool.ntp.org
-            timedatectl set-timezone Asia/Shanghai
 echo "Updatin exsit package..."
 yum clean all && rm -rf /var/cache/yum && yum update -y
-echo "nano git"
-yum install wget nano git -y
 echo "Configurating EPEL release..."
 yum install epel-release -y && yum makecache
 echo "Install necessary package..."
-yum install python-pip git net-tools htop ntp -y
+yum install nano git net-tools htop ntp -y
 echo "Disabling firewalld..."
 systemctl stop firewalld && systemctl disable firewalld
+echo "Setting system timezone..."
+timedatectl set-timezone Asia/Shanghai && systemctl stop ntpd.service && ntpdate us.pool.ntp.org
 echo "Installing libsodium..."
 yum install libsodium -y
-echo "Installing Shadowsocksr server from GitHub.."
-cd /root && git clone  https://github.com/shzxm/shadowsocks.git
-echo "Installing Gandi DDNS"
-git clone https://github.com/shzxm/gandi-ddns.git
-pip install -r requirements.txt
+echo "Installing Python3.6..."
+yum install python36 python36-pip -y
+echo "Installing Shadowsocksr server from GitHub..."
+cd /root && git clone -b manyuser https://github.com/Anankke/shadowsocks-mod.git
+mv shadowsocks-mod shadowsocks
 cd /root/shadowsocks
-pip install --upgrade pip setuptools
-pip install -r requirements.txt
-cd /root/gandi-ddns
-cp config-template.txt config.txt
-echo -n "Please enter apikey:"
-read apikey
-echo "Writting apikey..."
-sed -i -e "s/apikey = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/apikey = ${apikey}/g" config.txt
-echo "Please enter domain:"
-read domain
-echo "Writting domain..."
-sed -i -e "s/domain = example.com/domain = ${domain}/g" config.txt
-echo "Please enter a_name:"
-read a_name
-echo "Writting a_name..."
-sed -i -e "s/a_name = raspbian/a_name = ${a_name}/g" config.txt
-cat /root/gandi-ddns/config.txt
-cd /root/shadowsocks
+pip3 install --upgrade pip setuptools
+pip3 install -r requirements.txt
 echo "Generating config file..."
 cp apiconfig.py userapiconfig.py
 cp config.json user-config.json
@@ -142,7 +121,7 @@ if [[ ${is_auto} != "y" ]]; then
 			echo "Bad answer! Please only input number 1~2"
 		else
 			break
-		fi
+		fi			
 	done
 	while :; do echo
 		echo -n "Do you want to enable multi user in single port feature?(Y/N)"
@@ -160,7 +139,7 @@ do_mu(){
 		read mu_suffix
 		echo "Writting MU config..."
 	fi
-	sed -i -e "s/MU_SUFFIX = 'zhaoj.in'/MU_SUFFIX = '${mu_suffix}'/g" userapiconfig.py
+	sed -i -e "s/MU_SUFFIX = 'zhaoj.in'/MU_SUFFIX = '${mu_suffix}'/g" -e 's/SPEEDTEST = 6/SPEEDTEST = 0/g' userapiconfig.py
 }
 do_modwebapi(){
 	if [[ ${is_auto} != "y" ]]; then
@@ -195,7 +174,7 @@ do_glzjinmod(){
 		do_mu
 	fi
 	echo "Writting connection config..."
-	sed -i -e "s/NODE_ID = 1/NODE_ID = ${node_id}/g" -e "s/MYSQL_HOST = '127.0.0.1'/MYSQL_HOST = '${db_ip}'/g" -e "s/MYSQL_USER = 'ss'/MYSQL_USER = '${db_user}'/g" -e "s/MYSQL_PASS = 'ss'/MYSQL_PASS = '${db_password}'/g" -e "s/MYSQL_DB = 'shadowsocks'/MYSQL_DB = '${db_name}'/g" userapiconfig.py
+	sed -i -e "s/NODE_ID = 0/NODE_ID = ${node_id}/g" -e "s/MYSQL_HOST = '127.0.0.1'/MYSQL_HOST = '${db_ip}'/g" -e "s/MYSQL_USER = 'ss'/MYSQL_USER = '${db_user}'/g" -e "s/MYSQL_PASS = 'ss'/MYSQL_PASS = '${db_password}'/g" -e "s/MYSQL_DB = 'shadowsocks'/MYSQL_DB = '${db_name}'/g" userapiconfig.py
 }
 if [[ ${is_auto} != "y" ]]; then
 	#Do the configuration
@@ -206,9 +185,9 @@ if [[ ${is_auto} != "y" ]]; then
 	fi
 fi
 do_bbr(){
- echo "Running system optimization and enable BBR..."
-  rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
-  rpm -Uvh https://www.elrepo.org/elrepo-release-7.0-4.el7.elrepo.noarch.rpm
+	echo "Running system optimization and enable BBR..."
+	rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
+	rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-3.el7.elrepo.noarch.rpm
 	yum remove kernel-headers -y
 	yum --enablerepo=elrepo-kernel install kernel-ml kernel-ml-headers -y
 	grub2-set-default 0
@@ -241,12 +220,11 @@ EOF
 	sysctl -p
 }
 do_service(){
-  echo "Writting system config..."
-  wget -O ssr.service https://raw.githubusercontent.com/shzxm/songshu/master/ssr.service.el7
-  chmod 754 ssr.service && mv ssr.service /usr/lib/systemd/system
-  echo "@reboot python /root/gandi-ddns/gandi_ddns.py &" >> /var/spool/cron/root
-  echo "Starting SSR Node Service..."
-  systemctl enable ssr && systemctl start ssr
+	echo "Writting system config..."
+	wget --no-check-certificate -O ssr_node.service https://raw.githubusercontent.com/SuicidalCat/Airport-toolkit/master/ssr_node.service.el7
+	chmod 664 ssr_node.service && mv ssr_node.service /etc/systemd/system
+	echo "Starting SSR Node Service..."
+	systemctl daemon-reload && systemctl enable ssr_node && systemctl start ssr_node
 }
 while :; do echo
 	echo -n "Do you want to enable BBR feature(from mainline kernel) and optimizate the system?(Y/N)"
@@ -258,7 +236,7 @@ while :; do echo
 	fi
 done
 while :; do echo
-	echo -n "Do you want to register SSR Node/ddns as system service?(Y/N)"
+	echo -n "Do you want to register SSR Node as system service?(Y/N)"
 	read is_service
 	if [[ ${is_service} != "y" && ${is_service} != "Y" && ${is_service} != "N" && ${is_service} != "n" ]]; then
 		echo -n "Bad answer! Please only input number Y or N"
@@ -267,7 +245,7 @@ while :; do echo
 	fi
 done
 if [[ ${is_bbr} == "y" || ${is_bbr} == "Y" ]]; then
-  do_bbr
+	do_bbr
 fi
 if [[ ${is_service} == "y" || ${is_service} == "Y" ]]; then
 	do_service
