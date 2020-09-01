@@ -4,7 +4,7 @@ const cookieVal = $prefs.valueForKey(cookieKey)
 
 function sign() {
   let url = {
-    url: `https://www.v2ex.com/mission/daily`,
+    url: `https://v2ex.com/mission/daily`,
     method: 'GET',
     headers: {
       Cookie: cookieVal
@@ -26,7 +26,7 @@ function sign() {
 
 function signMission(code) {
   let url = {
-    url: `https://www.v2ex.com/mission/daily/redeem?once=${code}`,
+    url: `https://v2ex.com/mission/daily/redeem?once=${code}`,
     method: 'GET',
     headers: { Cookie: cookieVal }
   }
